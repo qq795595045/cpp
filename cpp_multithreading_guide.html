@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ 现代多线程与并发编程笔记</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Roboto, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            color: #333;
+            background: #fff;
+            line-height: 1.6;
+            font-size: 15px;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 左侧侧边栏 (GitBook风格) */
+        .sidebar {
+            width: 280px;
+            background: #fafafa;
+            border-right: 1px solid #e8e8e8;
+            padding: 24px 16px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #24292e;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #eaecef;
+        }
+
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-list li {
+            margin-bottom: 4px;
+        }
+
+        .nav-list a {
+            display: block;
+            padding: 6px 10px;
+            color: #586069;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 4px;
+            transition: all 0.15s;
+        }
+
+        .nav-list a:hover {
+            color: #0366d6;
+            background: #f1f8ff;
+        }
+
+        .nav-sub {
+            padding-left: 14px;
+            margin-top: 2px;
+            border-left: 2px solid #eaecef;
+        }
+
+        .nav-sub a {
+            font-size: 13px;
+            padding: 4px 8px;
+        }
+
+        /* 右侧正文区域 */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            max-width: 920px;
+            padding: 40px 48px;
+        }
+
+        h1 {
+            font-size: 26px;
+            color: #24292e;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eaecef;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #24292e;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #eaecef;
+            margin: 32px 0 16px;
+        }
+
+        h3 {
+            font-size: 16px;
+            color: #24292e;
+            margin: 22px 0 10px;
+        }
+
+        p {
+            margin-bottom: 14px;
+            color: #333;
+        }
+
+        ul, ol {
+            margin-bottom: 16px;
+            padding-left: 24px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        strong {
+            color: #24292e;
+        }
+
+        /* 紧凑表格 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 24px;
+            font-size: 14px;
+        }
+
+        th, td {
+            border: 1px solid #dfe2e5;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f6f8fa;
+            font-weight: 600;
+            color: #24292e;
+        }
+
+        tr:nth-child(2n) {
+            background-color: #fcfcfc;
+        }
+
+        /* GitBook 样式引用块 */
+        blockquote {
+            padding: 8px 16px;
+            color: #444;
+            background-color: #f8f9fa;
+            border-left: 4px solid #0366d6;
+            margin: 14px 0;
+            font-size: 14px;
+        }
+
+        blockquote.tip {
+            border-left-color: #28a745;
+            background-color: #f6ffed;
+        }
+
+        blockquote.warning {
+            border-left-color: #f5222d;
+            background-color: #fff1f0;
+        }
+
+        /* 代码与高亮 */
+        code {
+            font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 13px;
+            background-color: rgba(27,31,35,0.05);
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: #d73a49;
+        }
+
+        pre {
+            background-color: #f6f8fa;
+            border: 1px solid #eaecef;
+            border-radius: 4px;
+            padding: 14px;
+            overflow-x: auto;
+            margin: 14px 0 20px;
+            font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #24292e;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+        }
+
+        .kw { color: #d73a49; font-weight: 600; }
+        .typ { color: #6f42c1; }
+        .com { color: #6a737d; font-style: italic; }
+        .str { color: #032f62; }
+    </style>
+</head>
+<body>
+
+<!-- 左侧侧边栏 (目录树) -->
+<div class="sidebar">
+    <div class="sidebar-title">C++ 线程与并发速查</div>
+    <ul class="nav-list">
+        <li>
+            <a href="#sec-intro">1. 多线程核心概念</a>
+            <ul class="nav-sub">
+                <li><a href="#sec-intro-why">1.1 解决什么问题</a></li>
+                <li><a href="#sec-intro-scene">1.2 典型场景对比</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#sec-thread">2. std::thread 基础</a>
+            <ul class="nav-sub">
+                <li><a href="#sec-thread-create">2.1 线程创建与传参</a></li>
+                <li><a href="#sec-thread-join">2.2 join 与 detach</a></li>
+                <li><a href="#sec-thread-lambda">2.3 Lambda 传参剖析</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#sec-mutex">3. 锁与安全保护 (std::mutex)</a>
+            <ul class="nav-sub">
+                <li><a href="#sec-mutex-race">3.1 为什么会数据竞争</a></li>
+                <li><a href="#sec-mutex-guard">3.2 lock_guard 机制与生命周期</a></li>
+                <li><a href="#sec-mutex-scope">3.3 缩小临界区技巧</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#sec-traps">4. 并发四大典型缺陷</a>
+            <ul class="nav-sub">
+                <li><a href="#sec-traps-deadlock">4.1 死锁与避免</a></li>
+                <li><a href="#sec-traps-ref">4.2 传引用 std::ref</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#sec-cheatsheet">5. 极简口诀与速查表</a></li>
+    </ul>
+</div>
+
+<!-- 右侧正文流 (高信息密度白底阅读流) -->
+<div class="main-content">
+    <h1>C++ 现代多线程与并发编程笔记</h1>
+    <p>整理自 ROS 2 / C++ 模拟实战，聚焦核心机理、典型避坑点与高频模式。去除了多余装饰，以紧凑高效的文档形式呈现。</p>
+
+    <h2 id="sec-intro">1. 多线程核心概念</h2>
+    
+    <h3 id="sec-intro-why">1.1 解决什么问题</h3>
+    <p>单线程程序如同一个人干活，遇到耗时操作（IO读写、网络通信、复杂运算）时，整个主流程会被完全阻塞。多线程的核心意义在于<strong>重叠等待时间，使 CPU 能够并发处理不同任务</strong>。</p>
+
+    <h3 id="sec-intro-scene">1.2 典型场景对比</h3>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">应用场景</th>
+                <th style="width: 40%;">单线程表现</th>
+                <th style="width: 40%;">多线程并发表现</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>UI / ROS 回调响应</strong></td>
+                <td>处理长耗时任务时，界面冻结，ROS 话题无法及时接收新消息并引发队列溢出。</td>
+                <td>主线程继续快速接收数据并刷新，耗时检测或计算派发给后台工作线程处理。</td>
+            </tr>
+            <tr>
+                <td><strong>批量数据计算</strong></td>
+                <td>1000 个任务依次串行处理，只能利用单核 CPU。</td>
+                <td>分摊至 4 个线程并发执行，多核打满，耗时成倍降低。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="sec-thread">2. std::thread 基础</h2>
+
+    <h3 id="sec-thread-create">2.1 线程创建与传参</h3>
+    <p>创建线程即调用 <code>std::thread</code> 构造函数。参数默认<strong>以值拷贝形式</strong>传递到线程私有空间：</p>
+<pre><code><span class="com">// 普通函数作为线程入口</span>
+<span class="kw">void</span> <span class="typ">worker</span>(<span class="kw">int</span> a, <span class="kw">int</span> b);
+<span class="typ">std::thread</span> t1(worker, 10, 20);
+
+<span class="com">// 类成员函数作为线程入口</span>
+<span class="typ">std::thread</span> t2(&MyClass::memberFunc, <span class="kw">this</span>, arg1, arg2);
+</code></pre>
+
+    <h3 id="sec-thread-join">2.2 join 与 detach</h3>
+    <blockquote class="warning">
+        <strong>⚠️ 核心规则：</strong> <code>std::thread</code> 对象析构时，如果内部线程仍然处于可结合状态（joinable）但未被处理，C++ 运行时会直接调用 <code>std::terminate()</code> 强退程序。
+    </blockquote>
+    <ul>
+        <li><code>t.join()</code>：主线程阻塞等待子线程执行完毕，回收其系统资源。</li>
+        <li><code>t.detach()</code>：将子线程与主线程剥离，成为后台守护线程自生自灭（需确保后台线程访问的数据不会提前析构）。</li>
+    </ul>
+
+    <h3 id="sec-thread-lambda">2.3 Lambda 传参剖析</h3>
+    <p>在 ROS 2 等类设计中，最常用的线程调用方式是 Lambda：</p>
+<pre><code><span class="kw">int</span> cur = temp_now;
+<span class="kw">int</span> prev = temp_privious;
+<span class="typ">std::thread</span> t([<span class="kw">this</span>, cur, prev]() {
+    <span class="kw">this</span>-&gt;checkSpeedChange(cur, prev);
+});
+t.join();
+</code></pre>
+
+    <table>
+        <thead>
+            <tr>
+                <th>结构</th>
+                <th>作用</th>
+                <th>记忆口诀与注意事项</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>[ ]</code> 捕获列表</td>
+                <td>指定外部作用域哪些变量被引入匿名函数</td>
+                <td><strong>从外面拿东西</strong>。捕获 <code>this</code> 可访问类方法；捕获变量拷贝值避免外部修改。</td>
+            </tr>
+            <tr>
+                <td><code>( )</code> 参数列表</td>
+                <td>线程启动时传入的参数</td>
+                <td><strong>别人传给你</strong>。通常为空 <code>()</code>，因为需要的数据已在捕获列表中准备就绪。</td>
+            </tr>
+            <tr>
+                <td><code>{ }</code> 函数体</td>
+                <td>实际执行逻辑</td>
+                <td><strong>开始干活</strong>。调用具体的处理函数。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <blockquote class="tip">
+        <strong>💡 为什么需要 <code>int cur = temp_now;</code> 做一次值拷贝？</strong><br>
+        这是<strong>防御性编程</strong>。成员变量随时可能被下一次回调修改，通过值拷贝拍下“数据快照”，子线程即使因为调度延后执行，读取的也是触发那一刻的历史真值。
+    </blockquote>
+
+    <h2 id="sec-mutex">3. 锁与安全保护 (std::mutex)</h2>
+
+    <h3 id="sec-mutex-race">3.1 为什么会数据竞争</h3>
+    <p>对共享变量的非原子操作（如 <code>counter++</code> 或容器 <code>push_back</code>），在汇编层面包含 <code>读(LOAD) -> 改(ADD) -> 写(STORE)</code> 三步。并发执行时步骤交错，导致部分写入被覆盖丢失，甚至破坏容器内部结构引发 Segmentation Fault。</p>
+
+    <h3 id="sec-mutex-guard">3.2 lock_guard 机制与生命周期</h3>
+    <p><code>std::lock_guard</code> 采用 RAII（资源获取即初始化）模式：构造时自动 <code>lock()</code>，析构时自动 <code>unlock()</code>。杜绝因忘记手动解锁或中途 <code>return</code> / 抛异常导致的永久死锁。</p>
+
+    <h3 id="sec-mutex-scope">3.3 缩小临界区技巧</h3>
+    <p><code>lock_guard</code> 的作用域<strong>精确绑定在它所在的大括号 <code>{ }</code> 范围</strong>。工程中提倡“锁保护区间越小越好”：</p>
+<pre><code><span class="kw">void</span> <span class="typ">onMessageReceived</span>() {
+    <span class="kw">int</span> processed_val = heavyCalculation(); <span class="com">// 1. 耗时计算在锁外执行</span>
+
+    {
+        <span class="typ">std::lock_guard</span>&lt;<span class="typ">std::mutex</span>&gt; lock(mtx); <span class="com">// 2. 手动加大括号，上锁</span>
+        shared_history.push_back(processed_val);
+    } <span class="com">// 3. 刚出大括号，立刻自动解锁！</span>
+
+    sendLogOverNetwork(); <span class="com">// 4. 耗时网络发送在锁外，不阻塞其他线程</span>
+}
+</code></pre>
+
+    <h2 id="sec-traps">4. 并发四大典型缺陷</h2>
+
+    <h3 id="sec-traps-deadlock">4.1 死锁与避免</h3>
+    <p>多个线程按不同顺序请求多把锁，互相等待对方释放资源。例如 A 持有 <code>mtx1</code> 请求 <code>mtx2</code>，B 持有 <code>mtx2</code> 请求 <code>mtx1</code>。</p>
+    <ul>
+        <li><strong>规则</strong>：所有线程必须遵循严格一致的加锁顺序（如始终先锁 1 再锁 2）。</li>
+        <li><strong>现代 C++ 方案</strong>：使用 C++17 提供的 <code>std::scoped_lock lock(mtx1, mtx2);</code>，内部采用死锁避免算法一次性原子锁住全部锁。</li>
+    </ul>
+
+    <h3 id="sec-traps-ref">4.2 传引用陷阱：std::ref</h3>
+    <p><code>std::thread</code> 构造函数默认对所有参数进行拷贝。如果线程函数接收引用参数 <code>void func(int& val)</code>，必须显式用 <code>std::ref(val)</code> 包裹，否则编译期报错或只修改临时副本。</p>
+
+    <h2 id="sec-cheatsheet">5. 极简口诀与速查表</h2>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 25%;">组件 / 概念</th>
+                <th style="width: 35%;">核心职责</th>
+                <th style="width: 40%;">高频规范</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>std::thread</code></td>
+                <td>创建并管理线程</td>
+                <td>对象析构前<strong>必须</strong>执行 <code>join()</code> 或 <code>detach()</code>。</td>
+            </tr>
+            <tr>
+                <td><code>std::mutex</code></td>
+                <td>互斥实体</td>
+                <td>禁止手动裸调 <code>lock/unlock</code>，优先使用管理器。</td>
+            </tr>
+            <tr>
+                <td><code>std::lock_guard</code></td>
+                <td>RAII 自动锁</td>
+                <td>生于声明处，死于右括号；善用 <code>{ }</code> 缩小临界区。</td>
+            </tr>
+            <tr>
+                <td><code>std::scoped_lock</code></td>
+                <td>C++17 多锁管理</td>
+                <td>一次性安全锁多把互斥锁，原生防御死锁。</td>
+            </tr>
+            <tr>
+                <td><code>std::ref</code></td>
+                <td>线程引用传递</td>
+                <td>将变量以真实引用传递给线程目标函数。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <blockquote>
+        <strong>🎯 记忆口诀：</strong><br>
+        没锁就竞争，有锁就排队；手动锁怕忘，guard 帮你扛；<br>
+        生于声明处，死于右括号；要想早解锁，大括号来缩。
+    </blockquote>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ 提高编程 · 讲义语法全貌速查手册</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Roboto, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            color: #24292e; background: #fff; line-height: 1.6; font-size: 14px; display: flex; min-height: 100vh;
+        }
+
+        /* 左侧侧边栏导航 (GitBook 紧凑索引树) */
+        .sidebar {
+            width: 290px; background: #fafbfc; border-right: 1px solid #e1e4e8;
+            position: fixed; top: 0; bottom: 0; left: 0; overflow-y: auto; display: flex; flex-direction: column;
+        }
+        .sidebar-header {
+            padding: 16px 14px 10px; border-bottom: 1px solid #eaecef; background: #fff; position: sticky; top: 0; z-index: 10;
+        }
+        .sidebar-header h2 {
+            font-size: 14.5px; font-weight: 700; color: #0366d6; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+        }
+        .sidebar-header p {
+            font-size: 11px; color: #586069; margin-bottom: 8px;
+        }
+        .search-box {
+            width: 100%; padding: 6px 10px; font-size: 12px; border: 1px solid #d1d5da; border-radius: 4px; outline: none;
+        }
+        .search-box:focus { border-color: #0366d6; box-shadow: 0 0 0 2px rgba(3,102,214,0.15); }
+
+        .toc-container {
+            padding: 10px 12px 30px; flex: 1;
+        }
+        .toc ul { list-style: none; padding-left: 0; }
+        .toc li { margin: 2px 0; }
+        .toc a {
+            display: block; padding: 3px 6px; color: #444d56; text-decoration: none; border-radius: 4px; font-size: 12px; line-height: 1.4;
+        }
+        .toc a:hover { background-color: #f1f8ff; color: #0366d6; }
+        .toc .ch-title {
+            font-weight: 700; color: #24292e; margin-top: 10px; margin-bottom: 3px; font-size: 12.5px; padding-left: 4px;
+        }
+        .toc .sec-title {
+            font-weight: 600; color: #0366d6; margin-top: 6px; margin-bottom: 2px; font-size: 12px; padding-left: 8px;
+        }
+        .toc ul.sub-list { padding-left: 12px; }
+
+        /* 右侧主要内容阅读区 */
+        .content {
+            margin-left: 290px; padding: 32px 48px 80px; flex: 1; max-width: 980px;
+        }
+        h1 {
+            font-size: 24px; border-bottom: 1px solid #eaecef; padding-bottom: 8px; margin-bottom: 16px; color: #1f2328;
+        }
+        h2 {
+            font-size: 19px; border-bottom: 1px solid #eaecef; padding-bottom: 6px; margin-top: 34px; margin-bottom: 14px; color: #24292e;
+        }
+        h3 {
+            font-size: 16px; margin-top: 24px; margin-bottom: 10px; color: #0366d6;
+        }
+        h4 {
+            font-size: 14.5px; margin-top: 18px; margin-bottom: 8px; color: #24292e;
+        }
+        p, ul, ol { margin-bottom: 10px; color: #3b434b; font-size: 13.5px; }
+        ul, ol { padding-left: 22px; }
+        li { margin-bottom: 4px; }
+        strong { color: #24292e; }
+
+        /* 单行紧凑函数原型列表样式 (对齐用户截图) */
+        .proto-list {
+            list-style: disc;
+            padding-left: 22px;
+            margin: 6px 0 14px;
+        }
+        .proto-list li {
+            margin: 5px 0;
+            font-size: 13px;
+            line-height: 1.5;
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .proto-list li code {
+            background: #f6f8fa;
+            border: 1px solid #d0d7de;
+            border-radius: 4px;
+            padding: 2.5px 7px;
+            font-family: Consolas, "Liberation Mono", Courier, monospace;
+            font-size: 13px;
+            color: #24292e;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .proto-list li .proto-desc {
+            color: #57606a;
+            font-family: Consolas, "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        /* 代码块样式 */
+        pre.code-box {
+            white-space: pre-wrap;
+            word-break: break-all;
+            tab-size: 4;
+            font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            background-color: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 8px 0 14px;
+            overflow-x: auto;
+        }
+        pre.code-box code {
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+            white-space: inherit;
+        }
+
+        /* 语法高亮标签 */
+        .kw { color: #d73a49; font-weight: 600; }
+        .typ { color: #6f42c1; font-weight: 600; }
+        .com { color: #6a737d; font-style: italic; }
+        .str { color: #032f62; }
+        .num { color: #005cc5; }
+
+        /* 表格样式 */
+        table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 13px; }
+        th, td { border: 1px solid #d0d7de; padding: 6px 10px; text-align: left; }
+        th { background: #f6f8fa; font-weight: 600; color: #24292e; }
+        tr:nth-child(even) { background: #fafbfc; }
+
+        .asset-img {
+            max-width: 560px; width: 100%; height: auto; border: 1px solid #e1e4e8; border-radius: 6px; margin: 8px 0 12px; display: block; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 左侧导航 -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>📘 C++ 提高编程 · 讲义全集</h2>
+            <p>单行原型速查版 · 紧凑高密对齐原讲义</p>
+            <input type="text" id="toc-search" class="search-box" placeholder="搜索知识点小节..." onkeyup="filterToc()">
+        </div>
+        <div class="toc-container">
+            <nav class="toc" id="toc-nav">
+                <ul>
+                    <li><div class="ch-title">1 模板</div>
+                        <ul class="sub-list">
+                            <li><div class="sec-title">1.2 函数模板</div>
+                                <ul class="sub-list">
+                                    <li><a href="#sec-1-2-1">1.2.1 函数模板语法</a></li>
+                                    <li><a href="#sec-1-2-2">1.2.2 函数模板注意事项</a></li>
+                                    <li><a href="#sec-1-2-3">1.2.3 函数模板案例 (选择排序)</a></li>
+                                    <li><a href="#sec-1-2-4">1.2.4 普通函数与函数模板区别</a></li>
+                                    <li><a href="#sec-1-2-5">1.2.5 普通函数与函数模板调用规则</a></li>
+                                    <li><a href="#sec-1-2-6">1.2.6 模板的局限性与全特化</a></li>
+                                </ul>
+                            </li>
+                            <li><div class="sec-title">1.3 类模板</div>
+                                <ul class="sub-list">
+                                    <li><a href="#sec-1-3-1">1.3.1 类模板语法</a></li>
+                                    <li><a href="#sec-1-3-2">1.3.2 类模板与函数模板区别</a></li>
+                                    <li><a href="#sec-1-3-3">1.3.3 类模板成员函数创建时机</a></li>
+                                    <li><a href="#sec-1-3-4">1.3.4 类模板对象做函数参数</a></li>
+                                    <li><a href="#sec-1-3-5">1.3.5 类模板与继承</a></li>
+                                    <li><a href="#sec-1-3-6">1.3.6 类模板成员函数类外实现</a></li>
+                                    <li><a href="#sec-1-3-7">1.3.7 类模板分文件编写</a></li>
+                                    <li><a href="#sec-1-3-8">1.3.8 类模板与友元</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><div class="ch-title">2 STL初识</div>
+                        <ul class="sub-list">
+                            <li><div class="sec-title">2.5 容器算法迭代器初识</div>
+                                <ul class="sub-list">
+                                    <li><a href="#sec-2-5-1">2.5.1 vector存放内置数据类型</a></li>
+                                    <li><a href="#sec-2-5-2">2.5.2 vector存放自定义数据类型</a></li>
+                                    <li><a href="#sec-2-5-3">2.5.3 vector容器嵌套容器</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><div class="ch-title">3 STL- 常用容器</div>
+                        <ul class="sub-list">
+                            <li><div class="sec-title">3.1 string 容器</div>
+                                <ul class="sub-list">
+                                    <li><a href="#sec-3-1-2">3.1.2 string构造函数</a></li>
+                                    <li><a href="#sec-3-1-3">3.1.3 string赋值操作</a></li>
+                                    <li><a href="#sec-3-1-4">3.1.4 string字符串拼接</a></li>
+                                    <li><a href="#sec-3-1-5">3.1.5 string查找和替换</a></li>
+                                    <li><a href="#sec-3-1-6">3.1.6 string字符串比较</a></li>
+                                    <li><a href="#sec-3-1-7">3.1.7 string字符存取</a></li>
+                                    <li><a href="#sec-3-1-8">3.1.8 string插入和删除</a></li>
+                                    <li><a href="#sec-3-1-9">3.1.9 string子串与接口</a></li>
+                                </ul>
+                            </li>
+                            <li><div class="sec-title">3.2 vector 容器</div>
+                                <ul class="sub-list">
+                                    <li><a href="#sec-3-2-2">3.2.2 vector构造函数</a></li>
+                                    <li><a href="#sec-3-2-3">3.2.3 vector赋值操作</a></li>
+                                    <li><a href="#sec-3-2-4">3.2.4 vector容量和大小</a></li>
+                                    <li><a href="#sec-3-2-5">3.2.5 vector插入和删除</a></li>
+                                    <li><a href="#sec-3-2-6">3.2.6 vector数据存取</a></li>
+                                    <li><a href="#sec-3-2-7">3.2.7 vector互换容器 (swap收缩)</a></li>
+                                    <li><a href="#sec-3-2-8">3.2.8 vector预留空间 (reserve)</a></li>
+                                </ul>
+                            </li>
+                            <li><div class="sec-title">3.3 deque 容器</div>
+                                <ul class="sub-list">
+                                    <li><a href="#sec-3-3-2">3.3.2 deque构造函数</a></li>
+                                    <li><a href="#sec-3-3-3">3.3.3 deque赋值操作</a></li>
+                                    <li><a href="#sec-3-3-4">3.3.4 deque大小操作</a></li>
+                                    <li><a href="#sec-3-3-5">3.3.5 deque插入和删除</a></li>
+                                    <li><a href="#sec-3-3-6">3.3.6 deque数据存取</a></li>
+                                    <li><a href="#sec-3-3-7">3.3.7 deque排序</a></li>
+                                </ul>
+                            </li>
+                            <li><div class="sec-title">3.5 stack 容器</div>
+                                <ul class="sub-list">
+                                    <li><a href="#sec-3-5-2">3.5.2 stack常用接口</a></li>
+                                </ul>
+                            </li>
+                            <li><div class="sec-title">3.6 queue 容器</div>
+                                <ul class="sub-list">
+                                    <li><a href="#sec-3-6-2">3.6.2 queue常用接口</a></li>
+                                </ul>
+                            </li>
+                            <li><div class="sec-title">3.7 list 容器</div>
+                                <ul class="sub-list">
+                                    <li><a href="#sec-3-7-2">3.7.2 list构造函数</a></li>
+                                    <li><a href="#sec-3-7-3">3.7.3 list赋值和交换</a></li>
+                                    <li><a href="#sec-3-7-4">3.7.4 list大小操作</a></li>
+                                    <li><a href="#sec-3-7-5">3.7.5 list插入和删除</a></li>
+                                    <li><a href="#sec-3-7-6">3.7.6 list数据存取</a></li>
+                                    <li><a href="#sec-3-7-7">3.7.7 list反转和排序</a></li>
+                                </ul>
+                            </li>
+                            <li><div class="sec-title">3.8 set/multiset 容器</div>
+                                <ul class="sub-list">
+                                    <li><a href="#sec-3-8-2">3.8.2 set构造和赋值</a></li>
+                                    <li><a href="#sec-3-8-3">3.8.3 set大小和交换</a></li>
+                                    <li><a href="#sec-3-8-4">3.8.4 set插入和删除</a></li>
+                                    <li><a href="#sec-3-8-5">3.8.5 set查找和统计</a></li>
+                                    <li><a href="#sec-3-8-6">3.8.6 set和multiset区别</a></li>
+                                    <li><a href="#sec-3-8-7">3.8.7 pair对组创建</a></li>
+                                    <li><a href="#sec-3-8-8">3.8.8 set容器排序</a></li>
+                                </ul>
+                            </li>
+                            <li><div class="sec-title">3.9 map/multimap 容器</div>
+                                <ul class="sub-list">
+                                    <li><a href="#sec-3-9-2">3.9.2 map构造和赋值</a></li>
+                                    <li><a href="#sec-3-9-3">3.9.3 map大小和交换</a></li>
+                                    <li><a href="#sec-3-9-4">3.9.4 map插入和删除</a></li>
+                                    <li><a href="#sec-3-9-5">3.9.5 map查找和统计</a></li>
+                                    <li><a href="#sec-3-9-6">3.9.6 map容器排序</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><div class="ch-title">4 常用容器特性全景</div>
+                        <ul class="sub-list">
+                            <li><a href="#sec-4-overview">4.1 8大容器时间复杂度对比</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- 右侧主体内容 -->
+    <div class="content">
+        <h1>C++ 提高编程 · 讲义全集速查手册</h1>
+        <p>本手册完全保留原讲义知识体系（已剔除 1.1概念、2.1~2.4概念诞生与六大组件，剔除数十行长篇测试案例，保留纯语法与关键逻辑）。<strong>容器函数原型全部采用单行紧凑列表呈现，一目了然，绝不冗长繁琐。</strong></p>
+
+        <!-- 1 模板 -->
+        <h2 id="sec-1-template">1 模板</h2>
+
+        <h3 id="sec-1-2">1.2 函数模板</h3>
+
+        <h4 id="sec-1-2-1">1.2.1 函数模板语法</h4>
+        <p><strong>功能描述：</strong>建立一个通用函数，其函数返回值类型和形参类型可以不具体制定，用一个虚拟的类型来代表。</p>
+        <pre class="code-box"><code><span class="com">// 利用模板提供通用的交换函数</span>
+<span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
+<span class="typ">void</span> mySwap(T&amp; a, T&amp; b) {
+    T temp = a;
+    a = b;
+    b = temp;
+}</code></pre>
+        <p><strong>调用方式：</strong></p>
+        <ul>
+            <li><code>mySwap(a, b);</code> —— 自动类型推导</li>
+            <li><code>mySwap&lt;int&gt;(a, b);</code> —— 显式指定类型</li>
+        </ul>
+
+        <h4 id="sec-1-2-2">1.2.2 函数模板注意事项</h4>
+        <p>1. 自动类型推导，必须推导出一致的数据类型 T，才可以使用；<br>2. 模板必须要确定出 T 的数据类型，才可以使用。</p>
+        <pre class="code-box"><code><span class="com">// 模板必须确定出 T 的类型才能调用</span>
+<span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
+<span class="typ">void</span> func() {
+    <span class="com">// 内容</span>
+}</code></pre>
+
+        <h4 id="sec-1-2-3">1.2.3 函数模板案例 (通用选择排序)</h4>
+        <p><strong>功能描述：</strong>利用函数模板封装选择排序函数，可以对不同数据类型数组进行从大到小排序。</p>
+        <pre class="code-box"><code><span class="com">// 通用选择排序函数模板</span>
+<span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
+<span class="typ">void</span> mySort(T arr[], <span class="kw">int</span> len) {
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; len; i++) {
+        <span class="kw">int</span> max = i;
+        <span class="kw">for</span> (<span class="kw">int</span> j = i + <span class="num">1</span>; j &lt; len; j++) {
+            <span class="kw">if</span> (arr[max] &lt; arr[j]) {
+                max = j;
+            }
+        }
+        <span class="kw">if</span> (max != i) {
+            mySwap(arr[max], arr[i]);
+        }
+    }
+}</code></pre>
+
+        <h4 id="sec-1-2-4">1.2.4 普通函数与函数模板的区别</h4>
+        <p>1. 普通函数调用时可以发生自动类型转换（隐式类型转换）；<br>2. 函数模板自动类型推导不会发生隐式类型转换；<br>3. 显式指定类型方式可以发生隐式类型转换。</p>
+        <pre class="code-box"><code><span class="com">// 普通函数</span>
+<span class="typ">int</span> myAdd01(<span class="kw">int</span> a, <span class="kw">int</span> b) {
+    <span class="kw">return</span> a + b;
+}
+
+<span class="com">// 函数模板</span>
+<span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
+T myAdd02(T a, T b) {
+    <span class="kw">return</span> a + b;
+}</code></pre>
+
+        <h4 id="sec-1-2-5">1.2.5 普通函数与函数模板的调用规则</h4>
+        <p>1. 普通函数与函数模板均匹配时，优先调用普通函数；<br>2. 通过空模板参数列表强制调用函数模板：<code>myPrint&lt;&gt;(a, b);</code>；<br>3. 函数模板可以发生重载；<br>4. 函数模板产生更好匹配时优先调用模板。</p>
+        <pre class="code-box"><code><span class="com">// 普通函数</span>
+<span class="typ">void</span> myPrint(<span class="kw">int</span> a, <span class="kw">int</span> b) {
+    <span class="com">// 普通函数主体</span>
+}
+
+<span class="com">// 函数模板重载</span>
+<span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
+<span class="typ">void</span> myPrint(T a, T b) {
+    <span class="com">// 函数模板主体</span>
+}
+
+<span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
+<span class="typ">void</span> myPrint(T a, T b, T c) {
+    <span class="com">// 重载模板主体</span>
+}</code></pre>
+
+        <h4 id="sec-1-2-6">1.2.6 模板的局限性与全特化</h4>
+        <pre class="code-box"><code><span class="com">// 通用函数模板</span>
+<span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
+<span class="typ">bool</span> myCompare(T&amp; a, T&amp; b) {
+    <span class="kw">return</span> a == b;
+}
+
+<span class="com">// 具体化 Person 的全特化版本，具体化优先调用</span>
+<span class="kw">template</span> &lt;&gt;
+<span class="typ">bool</span> myCompare&lt;Person&gt;(Person&amp; p1, Person&amp; p2) {
+    <span class="kw">return</span> p1.m_Name == p2.m_Name &amp;&amp; p1.m_Age == p2.m_Age;
+}</code></pre>
+
+        <!-- 1.3 类模板 -->
+        <h3 id="sec-1-3">1.3 类模板</h3>
+
+        <h4 id="sec-1-3-1">1.3.1 类模板语法</h4>
+        <pre class="code-box"><code><span class="kw">template</span> &lt;<span class="kw">class</span> NameType, <span class="kw">class</span> AgeType&gt;
+<span class="kw">class</span> <span class="typ">Person</span> {
+<span class="kw">public</span>:
+    Person(NameType name, AgeType age) {
+        <span class="kw">this</span>-&gt;m_Name = name;
+        <span class="kw">this</span>-&gt;m_Age = age;
+    }
+    <span class="typ">void</span> showPerson() {
+        <span class="com">// 成员输出主体</span>
+    }
+    NameType m_Name;
+    AgeType m_Age;
+};</code></pre>
+
+        <h4 id="sec-1-3-2">1.3.2 类模板与函数模板区别</h4>
+        <p>1. 类模板没有自动类型推导使用方式；<br>2. 类模板在模板参数列表中可以有默认参数：<code>template &lt;class NameType, class AgeType = int&gt;</code>。</p>
+
+        <h4 id="sec-1-3-3">1.3.3 类模板中成员函数创建时机</h4>
+        <p>普通类成员函数一开始就创建；类模板中的成员函数在调用时才创建。</p>
+
+        <h4 id="sec-1-3-4">1.3.4 类模板对象做函数参数</h4>
+        <pre class="code-box"><code><span class="com">// 1. 指定传入的类型 (最常用)</span>
+<span class="typ">void</span> printPerson1(Person&lt;<span class="typ">std::string</span>, <span class="kw">int</span>&gt;&amp; p) {
+    p.showPerson();
+}
+
+<span class="com">// 2. 参数模板化</span>
+<span class="kw">template</span> &lt;<span class="kw">class</span> T1, <span class="kw">class</span> T2&gt;
+<span class="typ">void</span> printPerson2(Person&lt;T1, T2&gt;&amp; p) {
+    p.showPerson();
+}
+
+<span class="com">// 3. 整个类模板化</span>
+<span class="kw">template</span> &lt;<span class="kw">class</span> T&gt;
+<span class="typ">void</span> printPerson3(T&amp; p) {
+    p.showPerson();
+}</code></pre>
+
+        <h4 id="sec-1-3-5">1.3.5 类模板与继承</h4>
+        <pre class="code-box"><code><span class="kw">template</span> &lt;<span class="kw">class</span> T&gt;
+<span class="kw">class</span> <span class="typ">Base</span> {
+    T m;
+};
+
+<span class="com">// 派生类为普通类：必须指定父类中 T 的具体类型</span>
+<span class="kw">class</span> <span class="typ">Son</span> : <span class="kw">public</span> Base&lt;<span class="kw">int</span>&gt; {
+    <span class="com">// 子类主体</span>
+};
+
+<span class="com">// 派生类也为模板类：灵活指定类型</span>
+<span class="kw">template</span> &lt;<span class="kw">class</span> T1, <span class="kw">class</span> T2&gt;
+<span class="kw">class</span> <span class="typ">Son2</span> : <span class="kw">public</span> Base&lt;T2&gt; {
+    T1 obj;
+};</code></pre>
+
+        <h4 id="sec-1-3-6">1.3.6 类模板成员函数类外实现</h4>
+        <pre class="code-box"><code><span class="com">// 构造函数类外实现</span>
+<span class="kw">template</span> &lt;<span class="kw">class</span> T1, <span class="kw">class</span> T2&gt;
+Person&lt;T1, T2&gt;::Person(T1 name, T2 age) {
+    <span class="kw">this</span>-&gt;m_Name = name;
+    <span class="kw">this</span>-&gt;m_Age = age;
+}
+
+<span class="com">// 成员函数类外实现</span>
+<span class="kw">template</span> &lt;<span class="kw">class</span> T1, <span class="kw">class</span> T2&gt;
+<span class="typ">void</span> Person&lt;T1, T2&gt;::showPerson() {
+    <span class="com">// 成员函数主体</span>
+}</code></pre>
+
+        <h4 id="sec-1-3-7">1.3.7 类模板分文件编写</h4>
+        <p><strong>解决方式1：</strong>直接 <code>#include "person.cpp"</code> 源文件；<br><strong>解决方式2：</strong>将声明和实现写在同一个 <code>.hpp</code> 文件中，直接 <code>#include "person.hpp"</code>。</p>
+
+        <h4 id="sec-1-3-8">1.3.8 类模板与友元</h4>
+        <pre class="code-box"><code><span class="com">// 提前前置声明</span>
+<span class="kw">template</span> &lt;<span class="kw">class</span> T1, <span class="kw">class</span> T2&gt; <span class="kw">class</span> <span class="typ">PersonFriend</span>;
+<span class="kw">template</span> &lt;<span class="kw">class</span> T1, <span class="kw">class</span> T2&gt; <span class="typ">void</span> printPerson2(PersonFriend&lt;T1, T2&gt;&amp; p);
+
+<span class="kw">template</span> &lt;<span class="kw">class</span> T1, <span class="kw">class</span> T2&gt;
+<span class="kw">class</span> <span class="typ">PersonFriend</span> {
+    <span class="com">// 1. 全局函数类内实现</span>
+    <span class="kw">friend</span> <span class="typ">void</span> printPerson(PersonFriend&lt;T1, T2&gt;&amp; p) {
+        <span class="com">// 主体</span>
+    }
+
+    <span class="com">// 2. 全局函数类外实现：类内声明加空模板 &lt;&gt;</span>
+    <span class="kw">friend</span> <span class="typ">void</span> printPerson2&lt;&gt;(PersonFriend&lt;T1, T2&gt;&amp; p);
+};
+
+<span class="com">// 全局友元函数类外实现</span>
+<span class="kw">template</span> &lt;<span class="kw">class</span> T1, <span class="kw">class</span> T2&gt;
+<span class="typ">void</span> printPerson2(PersonFriend&lt;T1, T2&gt;&amp; p) {
+    <span class="com">// 主体</span>
+}</code></pre>
+
+        <!-- 2 STL初识 -->
+        <h2 id="sec-2-stl">2 STL初识</h2>
+
+        <h3 id="sec-2-5">2.5 容器算法迭代器初识</h3>
+
+        <h4 id="sec-2-5-1">2.5.1 vector存放内置数据类型</h4>
+        <pre class="code-box"><code><span class="com">// 标准迭代器遍历与基于范围 for</span>
+<span class="kw">for</span> (<span class="typ">std::vector</span>&lt;<span class="kw">int</span>&gt;::iterator it = v.begin(); it != v.end(); it++) {
+    cout &lt;&lt; *it &lt;&lt; endl;
+}
+
+<span class="kw">for</span> (<span class="kw">const</span> <span class="kw">auto</span>&amp; val : v) {
+    cout &lt;&lt; val &lt;&lt; endl;
+}</code></pre>
+
+        <h4 id="sec-2-5-2">2.5.2 vector存放自定义数据类型</h4>
+        <pre class="code-box"><code><span class="com">// 遍历存放自定义对象与指针</span>
+<span class="kw">for</span> (<span class="typ">std::vector</span>&lt;Person&gt;::iterator it = v.begin(); it != v.end(); it++) {
+    cout &lt;&lt; (*it).m_Name &lt;&lt; <span class="str">" "</span> &lt;&lt; it-&gt;m_Age &lt;&lt; endl;
+}
+
+<span class="kw">for</span> (<span class="typ">std::vector</span>&lt;Person*&gt;::iterator it = v.begin(); it != v.end(); it++) {
+    cout &lt;&lt; (*it)-&gt;m_Name &lt;&lt; <span class="str">" "</span> &lt;&lt; (*it)-&gt;m_Age &lt;&lt; endl;
+}</code></pre>
+
+        <h4 id="sec-2-5-3">2.5.3 vector容器嵌套容器</h4>
+        <pre class="code-box"><code><span class="com">// 遍历嵌套容器</span>
+<span class="kw">for</span> (<span class="typ">std::vector</span>&lt;<span class="typ">std::vector</span>&lt;<span class="kw">int</span>&gt;&gt;::iterator it = v.begin(); it != v.end(); it++) {
+    <span class="kw">for</span> (<span class="typ">std::vector</span>&lt;<span class="kw">int</span>&gt;::iterator vit = it-&gt;begin(); vit != it-&gt;end(); vit++) {
+        cout &lt;&lt; *vit &lt;&lt; <span class="str">" "</span>;
+    }
+    cout &lt;&lt; endl;
+}</code></pre>
+
+        <!-- 3 STL- 常用容器 -->
+        <h2 id="sec-3-containers">3 STL- 常用容器</h2>
+
+        <!-- 3.1 string -->
+        <h3 id="sec-3-1">3.1 string 容器</h3>
+
+        <h4 id="sec-3-1-2">3.1.2 string构造函数</h4>
+        <p><strong>构造函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>string();</code><span class="proto-desc">// 创建一个空的字符串 例如: string str;</span></li>
+            <li><code>string(const char* s);</code><span class="proto-desc">// 使用字符串 s 初始化</span></li>
+            <li><code>string(const string&amp; str);</code><span class="proto-desc">// 使用一个 string 对象初始化另一个 string 对象</span></li>
+            <li><code>string(int n, char c);</code><span class="proto-desc">// 使用 n 个字符 c 初始化</span></li>
+        </ul>
+
+        <h4 id="sec-3-1-3">3.1.3 string赋值操作</h4>
+        <p><strong>赋值的函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>string&amp; operator=(const char* s);</code><span class="proto-desc">// char* 类型字符串 赋值给当前的字符串</span></li>
+            <li><code>string&amp; operator=(const string&amp; s);</code><span class="proto-desc">// 把字符串 s 赋给当前的字符串</span></li>
+            <li><code>string&amp; operator=(char c);</code><span class="proto-desc">// 字符赋值给当前的字符串</span></li>
+            <li><code>string&amp; assign(const char* s);</code><span class="proto-desc">// 把字符串 s 赋给当前的字符串</span></li>
+            <li><code>string&amp; assign(const char* s, int n);</code><span class="proto-desc">// 把字符串 s 的前 n 个字符赋给当前的字符串</span></li>
+            <li><code>string&amp; assign(const string&amp; s);</code><span class="proto-desc">// 把字符串 s 赋给当前字符串</span></li>
+            <li><code>string&amp; assign(int n, char c);</code><span class="proto-desc">// 用 n 个字符 c 赋给当前字符串</span></li>
+        </ul>
+
+        <h4 id="sec-3-1-4">3.1.4 string字符串拼接</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>string&amp; operator+=(const char* str);</code><span class="proto-desc">// 重载 += 操作符</span></li>
+            <li><code>string&amp; operator+=(const char c);</code><span class="proto-desc">// 重载 += 操作符</span></li>
+            <li><code>string&amp; operator+=(const string&amp; str);</code><span class="proto-desc">// 重载 += 操作符</span></li>
+            <li><code>string&amp; append(const char* s);</code><span class="proto-desc">// 把字符串 s 连接到当前字符串结尾</span></li>
+            <li><code>string&amp; append(const char* s, int n);</code><span class="proto-desc">// 把字符串 s 的前 n 个字符连接到当前字符串结尾</span></li>
+            <li><code>string&amp; append(const string&amp; s);</code><span class="proto-desc">// 同 operator+=(const string&amp; str)</span></li>
+            <li><code>string&amp; append(const string&amp; s, int pos, int n);</code><span class="proto-desc">// 字符串 s 中从 pos 开始的 n 个字符连接到字符串结尾</span></li>
+        </ul>
+
+        <h4 id="sec-3-1-5">3.1.5 string查找和替换</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>int find(const string&amp; str, int pos = 0) const;</code><span class="proto-desc">// 查找 str 第一次出现位置,从 pos 开始查找</span></li>
+            <li><code>int find(const char* s, int pos = 0) const;</code><span class="proto-desc">// 查找 s 第一次出现位置,从 pos 开始查找</span></li>
+            <li><code>int find(const char* s, int pos, int n) const;</code><span class="proto-desc">// 从 pos 位置查找 s 的前 n 个字符第一次位置</span></li>
+            <li><code>int find(const char c, int pos = 0) const;</code><span class="proto-desc">// 查找字符 c 第一次出现位置</span></li>
+            <li><code>int rfind(const string&amp; str, int pos = npos) const;</code><span class="proto-desc">// 查找 str 最后一次位置,从 pos 开始查找</span></li>
+            <li><code>int rfind(const char* s, int pos = npos) const;</code><span class="proto-desc">// 查找 s 最后一次位置,从 pos 开始查找</span></li>
+            <li><code>int rfind(const char* s, int pos, int n) const;</code><span class="proto-desc">// 从 pos 位置查找 s 的前 n 个字符最后一次位置</span></li>
+            <li><code>int rfind(const char c, int pos = 0) const;</code><span class="proto-desc">// 查找字符 c 最后一次出现位置</span></li>
+            <li><code>string&amp; replace(int pos, int n, const string&amp; str);</code><span class="proto-desc">// 替换从 pos 开始 n 个字符为字符串 str</span></li>
+            <li><code>string&amp; replace(int pos, int n, const char* s);</code><span class="proto-desc">// 替换从 pos 开始的 n 个字符为字符串 s</span></li>
+        </ul>
+
+        <h4 id="sec-3-1-6">3.1.6 string字符串比较</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>int compare(const string&amp; s) const;</code><span class="proto-desc">// 与字符串 s 比较 (等于返回0，大于返回1，小于返回-1)</span></li>
+            <li><code>int compare(const char* s) const;</code><span class="proto-desc">// 与字符串 s 比较</span></li>
+        </ul>
+
+        <h4 id="sec-3-1-7">3.1.7 string字符存取</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>char&amp; operator[](int n);</code><span class="proto-desc">// 通过 [] 方式取字符</span></li>
+            <li><code>char&amp; at(int n);</code><span class="proto-desc">// 通过 at 方法获取字符</span></li>
+        </ul>
+
+        <h4 id="sec-3-1-8">3.1.8 string插入和删除</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>string&amp; insert(int pos, const char* s);</code><span class="proto-desc">// 插入字符串</span></li>
+            <li><code>string&amp; insert(int pos, const string&amp; str);</code><span class="proto-desc">// 插入字符串</span></li>
+            <li><code>string&amp; insert(int pos, int n, char c);</code><span class="proto-desc">// 在指定位置插入 n 个字符 c</span></li>
+            <li><code>string&amp; erase(int pos, int n = npos);</code><span class="proto-desc">// 删除从 pos 开始的 n 个字符</span></li>
+        </ul>
+
+        <h4 id="sec-3-1-9">3.1.9 string子串与接口</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>string substr(int pos = 0, int n = npos) const;</code><span class="proto-desc">// 返回由 pos 开始的 n 个字符组成的字符串</span></li>
+            <li><code>const char* c_str() const noexcept;</code><span class="proto-desc">// 导出以 '\0' 结尾的 C 风格字符串指针 (兼容底层 C 接口)</span></li>
+        </ul>
+
+        <!-- 3.2 vector -->
+        <h3 id="sec-3-2">3.2 vector 容器</h3>
+        <img class="asset-img" src="data:image/jpeg;base64,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PK1w02k3mpajew7p7vfKqY8sDIVR8vAIA+v413dFAHBQ6v4meZPOzHdfuvIgYECZSPmJUKeTzn5htxSQ6tqUmoWUS3tzcM8UEl1FJCP3UhlAYD5eOMj2xmu9IBBBGQaq2Wl2OnF2tLdYi4wTkk49Oeg9ulAdDjJrzV10y3FzdXMsd7aBroyIFEf75FbGAMfIzDH410toPJ8U3cEAAtzaRO6r0V8sB9MqB+QrWlijnieKVA8bqVZWGQQeopkFrBbbvJiVN+NxHU4GBn8AKAJqKKKAMnxDd3WnWUeo24kkS2kDTQxruMsZ4IA65BIP4Vnahd6raeHrNfPL3fmx/bpBwYkbJPIU4A4GcHArp6KAOE+3689teTm8uMWtqJbcRx5Ep8xgMkqN3ygDgDPWkkur6fUrW4ea4bUYVvC1sY/kh+Q7Mcdxtxyc5rvKKAOZ0UJDqOmraHMc+mb58fxEFdrH3JZ66aq9tY2tmWNtAkRfrtHuT/U/nVimAUUUUgCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/2Q==" alt="vector 动态扩展原理">
+
+        <h4 id="sec-3-2-2">3.2.2 vector构造函数</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>vector&lt;T&gt; v;</code><span class="proto-desc">// 采用模板实现类实现，默认构造函数</span></li>
+            <li><code>vector(v.begin(), v.end());</code><span class="proto-desc">// 将 v[begin(), end()) 区间中的元素拷贝给本身</span></li>
+            <li><code>vector(n, elem);</code><span class="proto-desc">// 构造函数将 n 个 elem 拷贝给本身</span></li>
+            <li><code>vector(const vector&amp; vec);</code><span class="proto-desc">// 拷贝构造函数</span></li>
+        </ul>
+
+        <h4 id="sec-3-2-3">3.2.3 vector赋值操作</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>vector&amp; operator=(const vector&amp; vec);</code><span class="proto-desc">// 重载等号操作符</span></li>
+            <li><code>assign(beg, end);</code><span class="proto-desc">// 将 [beg, end) 区间中的数据拷贝赋值给本身</span></li>
+            <li><code>assign(n, elem);</code><span class="proto-desc">// 将 n 个 elem 拷贝赋值给本身</span></li>
+        </ul>
+
+        <h4 id="sec-3-2-4">3.2.4 vector容量和大小</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>bool empty();</code><span class="proto-desc">// 判断容器是否为空</span></li>
+            <li><code>int capacity();</code><span class="proto-desc">// 容器的容量</span></li>
+            <li><code>int size();</code><span class="proto-desc">// 返回容器中元素的个数</span></li>
+            <li><code>void resize(int num);</code><span class="proto-desc">// 重新指定容器长度，若变长以默认值填充，变短超出的被删除</span></li>
+            <li><code>void resize(int num, elem);</code><span class="proto-desc">// 重新指定容器长度，若变长以 elem 值填充，变短超出的被删除</span></li>
+        </ul>
+
+        <h4 id="sec-3-2-5">3.2.5 vector插入和删除</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>void push_back(ele);</code><span class="proto-desc">// 尾部插入元素 ele</span></li>
+            <li><code>void pop_back();</code><span class="proto-desc">// 删除最后一个元素</span></li>
+            <li><code>iterator insert(const_iterator pos, ele);</code><span class="proto-desc">// 迭代器指向位置 pos 插入元素 ele</span></li>
+            <li><code>iterator insert(const_iterator pos, int count, ele);</code><span class="proto-desc">// 迭代器指向位置 pos 插入 count 个元素 ele</span></li>
+            <li><code>iterator erase(const_iterator pos);</code><span class="proto-desc">// 删除迭代器指向的元素</span></li>
+            <li><code>iterator erase(const_iterator start, const_iterator end);</code><span class="proto-desc">// 删除迭代器从 start 到 end 之间的元素</span></li>
+            <li><code>void clear();</code><span class="proto-desc">// 删除容器中所有元素</span></li>
+        </ul>
+
+        <h4 id="sec-3-2-6">3.2.6 vector数据存取</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>at(int idx);</code><span class="proto-desc">// 返回索引 idx 所指的数据</span></li>
+            <li><code>operator[](int idx);</code><span class="proto-desc">// 返回索引 idx 所指的数据</span></li>
+            <li><code>front();</code><span class="proto-desc">// 返回容器中第一个数据元素</span></li>
+            <li><code>back();</code><span class="proto-desc">// 返回容器中最后一个数据元素</span></li>
+        </ul>
+
+        <h4 id="sec-3-2-7">3.2.7 vector互换容器 (swap收缩)</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>swap(vec);</code><span class="proto-desc">// 将 vec 与本身的元素互换</span></li>
+            <li><code>vector&lt;T&gt;(v).swap(v);</code><span class="proto-desc">// 巧用匿名对象 swap 彻底收缩内存空间语法</span></li>
+        </ul>
+
+        <h4 id="sec-3-2-8">3.2.8 vector预留空间 (reserve)</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>reserve(int len);</code><span class="proto-desc">// 容器预留 len 个元素长度，预留位置不初始化，元素不可访问</span></li>
+        </ul>
+
+        <!-- 3.3 deque -->
+        <h3 id="sec-3-3">3.3 deque 容器</h3>
+        <img class="asset-img" src="data:image/jpeg;base64,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" alt="deque 中控器结构">
+
+        <h4 id="sec-3-3-2">3.3.2 deque构造函数</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>deque&lt;T&gt; deq;</code><span class="proto-desc">// 默认构造形式</span></li>
+            <li><code>deque(beg, end);</code><span class="proto-desc">// 构造函数将 [beg, end) 区间中的元素拷贝给本身</span></li>
+            <li><code>deque(n, elem);</code><span class="proto-desc">// 构造函数将 n 个 elem 拷贝给本身</span></li>
+            <li><code>deque(const deque&amp; deq);</code><span class="proto-desc">// 拷贝构造函数</span></li>
+        </ul>
+
+        <h4 id="sec-3-3-3">3.3.3 deque赋值操作</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>deque&amp; operator=(const deque&amp; deq);</code><span class="proto-desc">// 重载等号操作符</span></li>
+            <li><code>assign(beg, end);</code><span class="proto-desc">// 将 [beg, end) 区间中的数据拷贝赋值给本身</span></li>
+            <li><code>assign(n, elem);</code><span class="proto-desc">// 将 n 个 elem 拷贝赋值给本身</span></li>
+        </ul>
+
+        <h4 id="sec-3-3-4">3.3.4 deque大小操作</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>deque.empty();</code><span class="proto-desc">// 判断容器是否为空</span></li>
+            <li><code>deque.size();</code><span class="proto-desc">// 返回容器中元素的个数</span></li>
+            <li><code>deque.resize(num);</code><span class="proto-desc">// 重新指定容器长度，若变长以默认值填充，变短超出的被删除</span></li>
+            <li><code>deque.resize(num, elem);</code><span class="proto-desc">// 重新指定容器长度，若变长以 elem 值填充，变短超出的被删除</span></li>
+        </ul>
+
+        <h4 id="sec-3-3-5">3.3.5 deque插入和删除</h4>
+        <p><strong>两端插入操作：</strong></p>
+        <ul class="proto-list">
+            <li><code>push_back(elem);</code><span class="proto-desc">// 在容器尾部添加一个数据</span></li>
+            <li><code>push_front(elem);</code><span class="proto-desc">// 在容器头部插入一个数据</span></li>
+            <li><code>pop_back();</code><span class="proto-desc">// 删除容器最后一个数据</span></li>
+            <li><code>pop_front();</code><span class="proto-desc">// 删除容器第一个数据</span></li>
+        </ul>
+        <p><strong>指定位置操作：</strong></p>
+        <ul class="proto-list">
+            <li><code>insert(pos, elem);</code><span class="proto-desc">// 在 pos 位置插入一个 elem 元素的拷贝，返回新数据位置</span></li>
+            <li><code>insert(pos, n, elem);</code><span class="proto-desc">// 在 pos 位置插入 n 个 elem 数据，无返回值</span></li>
+            <li><code>insert(pos, beg, end);</code><span class="proto-desc">// 在 pos 位置插入 [beg, end) 区间的数据，无返回值</span></li>
+            <li><code>clear();</code><span class="proto-desc">// 清空容器中的所有数据</span></li>
+            <li><code>erase(beg, end);</code><span class="proto-desc">// 删除 [beg, end) 区间的数据，返回下一个数据的位置</span></li>
+            <li><code>erase(pos);</code><span class="proto-desc">// 删除 pos 位置的数据，返回下一个数据的位置</span></li>
+        </ul>
+
+        <h4 id="sec-3-3-6">3.3.6 deque数据存取</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>at(int idx);</code><span class="proto-desc">// 返回索引 idx 所指的数据</span></li>
+            <li><code>operator[](int idx);</code><span class="proto-desc">// 返回索引 idx 所指的数据</span></li>
+            <li><code>front();</code><span class="proto-desc">// 返回容器中第一个数据元素</span></li>
+            <li><code>back();</code><span class="proto-desc">// 返回容器中最后一个数据元素</span></li>
+        </ul>
+
+        <h4 id="sec-3-3-7">3.3.7 deque排序</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>sort(iterator beg, iterator end);</code><span class="proto-desc">// 对 [beg, end) 区间内元素进行排序 (包含 &lt;algorithm&gt;)</span></li>
+        </ul>
+
+        <!-- 3.5 stack -->
+        <h3 id="sec-3-5">3.5 stack 容器</h3>
+        <img class="asset-img" src="data:image/jpeg;base64,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" alt="stack 栈结构">
+
+        <h4 id="sec-3-5-2">3.5.2 stack常用接口</h4>
+        <p><strong>构造函数：</strong></p>
+        <ul class="proto-list">
+            <li><code>stack&lt;T&gt; stk;</code><span class="proto-desc">// stack 默认构造形式</span></li>
+            <li><code>stack(const stack&amp; stk);</code><span class="proto-desc">// 拷贝构造函数</span></li>
+        </ul>
+        <p><strong>赋值操作：</strong></p>
+        <ul class="proto-list">
+            <li><code>stack&amp; operator=(const stack&amp; stk);</code><span class="proto-desc">// 重载等号操作符</span></li>
+        </ul>
+        <p><strong>数据存取：</strong></p>
+        <ul class="proto-list">
+            <li><code>push(elem);</code><span class="proto-desc">// 向栈顶添加元素</span></li>
+            <li><code>pop();</code><span class="proto-desc">// 从栈顶移除第一个元素</span></li>
+            <li><code>top();</code><span class="proto-desc">// 返回栈顶元素</span></li>
+        </ul>
+        <p><strong>大小操作：</strong></p>
+        <ul class="proto-list">
+            <li><code>empty();</code><span class="proto-desc">// 判断堆栈是否为空</span></li>
+            <li><code>size();</code><span class="proto-desc">// 返回栈的大小</span></li>
+        </ul>
+
+        <!-- 3.6 queue -->
+        <h3 id="sec-3-6">3.6 queue 容器</h3>
+        <img class="asset-img" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4+JS5ESUM8SDc9Pjv/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozv/wAARCAEOAioDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD2aiiigAooooAKKKKACiiigAorL17xBY+HLOO71AusUkoiBRd2Cc4/lWdpnjrS9TgvnEF7bS2MRlkguYDHIU/vAHqKAOlorIuPEthbWOn3svmiHUGVYjt+7uGRu9OKz9K8faVq2ppYw29/EJiVguJrYrDMR/dbvR1sHS509FcBpvxIt7VZotXW7mdLySJ54LbMUC7sLvYcCumuNVln8RWml2bgKIvtNxIAD8nRV/E/yoWtgelzZorH0bU5ptQ1DS7x1a5s5AwYDG+JuVOP0/CtigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKqalqlnpFm11ezCONencsfQDuaALdUNQ1zS9LH+m30MJ7KzjcfoOtcVqXibVtYLJAzabZnoF/1zj3P8P0HNZcVpBCxdIwZG+87fMzfUnk1rGk3uZuolsdfJ8QdJ/5d7e9uPdYCo/8AHsVqaDr8HiC2lmggmg8mQxskwAOfwJrgq6X4f/8AHrqP/X2f5CicFFBCbkyP4jvJFp2lSQ2/2iRNThZYs434zxVNYtQ8Xane6kNJudNgj06S0jW7UJJM7e390Y6112q6PbauLUXDSD7LcLcJsOPmXpn25q/WNtGvX8VY1vqv663PLhdazq1hoGm/8I1exf2dcIl09wm1GKqR8vqp9ag0Ky1G18R2sGi6fr2mKlxuurW6IexRP4thPX2r1iiqvrcm2ljgItLux8PNetfsMonmuZ2SLyzufLjBA71o6Mj2vjaRLjcrXOlwmMN/s8MPrXXVUu9Ngu7q2um3LPasTG68HBGCp9jSWn9eVhvX+vO5h2CNN8RNUuIx+6hs4oXYdC+S2PwBrp6qafpsGmxyrDuZppGlkdzlmY9zVujokHVsKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAKWrapbaPp8l5dNhE4Cjq7dlHua86ubm61a9/tDUTmT/AJZQj7sA9B7+pqzrmqHXdZaRWzZWbFLcdnf+J/6Cq1dFOFtWYVJdEFFFFbGQV0vw/wD+PXUf+vs/yFc1XS/D/wD49dR/6+z/ACFY1djWludbRRRXObhRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABWH4v1J9M8PTNC2J7giCL/AHm4z+Aya3K4jx1P5usabZZ4iR7hh6/wj+tVFXdhSdlcwYYVt4UhT7qDAp9FSabp15r100FifKt4zie7IyF9VX1b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6E5ub+AOircRQXBRLnaMfvAOvHFdZRQBijwppQOoDymMWoQpDLFn5FVVwNo7VTl0SXSNQ0e8szNdJaxmzm3nc5ibo3HXBA/Cumoo63DpYwrCxlufFN5rNxC0Sxxi1tgwwWUHLN+J/lW7RRR0sHUKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAxLvwpp94NVEjzj+1Qnn7WHG3pt446U7XPDFhr1hBa3LTxPbEGC4gk2SxEDGVb6Vs0UrAc1ZeA9JsoIlWS6lmS5W5e5ml3yyuvTcx6gVo3Hh+yutSuL+UyGS4tfsrru+XZnP51qUU3r/XyD+v1ORfwu2gW+kzabLdXn9mSkFZn3yNC/DKPp1ArQWxlv/F/9pTQvHBYQmKAsMeYzcsw9gMCt6ii4BRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABSUtcj4i1mTUJJtH02UpGgIu7lD93/YU/3vX0ppNuyE2krs6uOWOZBJE6uh6MpyDT6wvBcaReErCONdqpGQB+JrWur21sovNuriOBP70jBaQyeobm6t7O3a4uZkhiQZZ3OAK5668YrMWi0a0e7btPICkI/HqfwrJktp7+cXOrXJu5FOUixiKM+y/wBTWkacpESqJE2papceJP3MSvb6Vn5s/K9z7Y7J/OqetQq3h+9hUBFNuygY4HFaFUtTja7jh02PmS+lWIAf3erH8ADXSoqETn5nKR2ejo0ei2KP95bdAfrtFXaaqhECjoBgU6uI6wooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACkPApaQ9DSewHERfEyKRVuf7C1AacsvlT3oAMcLbsc9yOnNaGseNfsGpPp+m6Le6xNDGJLj7NgCJTyMk9SR2rj9DPiLU/CLeHrTR0a1vZpV/tEygJEhkO7K9d3XFb9xF4g8K63eTaXojaxa38ce0xyqjROihfmz1B602PqTS/Ee2llih0nSb3VJp7cTpHCADjJDBs9CMVZm8Xrf+GYrzToniu7ucWiwyjDQyk4II9utclpUOveFfFDCHTE1S6On+Zc28EgQgvKT8pPGATWnLpV9pWl2Or6mixzNrAvLmKNsrCr/LjPtxk07Xt/XW35EvT+vK/wCZ0l5eT6LrWlxzXUk1peD7M2/kiUDKt+PINdBXMeLI2vdQ0Kxh+aRr1Zzj+FEGSf1FTeItekt5P7L0whr6Rcu/UW6f3j7+goSb+8G0vuIfEOuSyTto+lybZyP9JuB0gU9h/tnt6Vm29rFa2wt4V2oAfqT3J9TRaWkdnB5UeWJO53Y5Z2PUk9zU1dkIKKOWc+ZlGyh1q309LFtYMUMeQot4grYzn7x5pyaVaB/MmV7qXr5lyxkP68VcopqEVshOUmHtRRUN1dwWaBpnxuOFUDLOfQDuaskklljhiaWVwiIMsxPAFXfC+nSXFw2uXcZTeuy0jYYKJ3Y+7fyqLS/D9xqcsd7q8RhtkO6GyPUns0n+FdZ0rlqVL6I6KcLasWiiisDYKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApKWigCnpml2mj2Qs7KMxwqzMFLE8k5PJ9zVyiigCmul2i6u+qiM/anhELPuONoOQMfWp7m3iu7eS3nQPFIpVlPcVLRR5AU7fS7S2uUuURjMkIhV3YsQg7c1yuraRPoF3cajAr3NjcyGS4/ikhY9W919u1dtSEAjBGQaqMnF3RLimrHFxSxzRLLE4dHGVZTkEU6pNX8PzaVJJf6PEZLdjunsl7erR+h/2e9VYLqG6tftFu4dCDg+h9D6GuyE1JHLKDiyaq1xqVnauI5Z18xvuxr8zN9AOasaD4bh1rSYL7U727nabLeWsnlovJ4+XB/M109jo+m6auLOyhhPdlQZP1PWsnW7I0VLucrbWWt6p/x7Wn2CH/AJ73Y+Yj2Qf1xW/pXhqy0yT7Qxe6uz1uJjlh/ujoo+lbFFYynKW5tGCjsFFFFQUFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABXMa94blDy6noqhblgTNbZwlxx+je/eunopptO6E0mtTF8IJNH4XskuIHglCHfHIMMpyeDW1RRSGFFFFABRRRQAUUUUAf//Z" alt="queue 队列结构">
+
+        <h4 id="sec-3-6-2">3.6.2 queue常用接口</h4>
+        <p><strong>构造函数：</strong></p>
+        <ul class="proto-list">
+            <li><code>queue&lt;T&gt; que;</code><span class="proto-desc">// queue 默认构造形式</span></li>
+            <li><code>queue(const queue&amp; que);</code><span class="proto-desc">// 拷贝构造函数</span></li>
+        </ul>
+        <p><strong>赋值操作：</strong></p>
+        <ul class="proto-list">
+            <li><code>queue&amp; operator=(const queue&amp; que);</code><span class="proto-desc">// 重载等号操作符</span></li>
+        </ul>
+        <p><strong>数据存取：</strong></p>
+        <ul class="proto-list">
+            <li><code>push(elem);</code><span class="proto-desc">// 往队尾添加元素</span></li>
+            <li><code>pop();</code><span class="proto-desc">// 从队头移除第一个元素</span></li>
+            <li><code>front();</code><span class="proto-desc">// 返回第一个元素</span></li>
+            <li><code>back();</code><span class="proto-desc">// 返回最后一个元素</span></li>
+        </ul>
+        <p><strong>大小操作：</strong></p>
+        <ul class="proto-list">
+            <li><code>empty();</code><span class="proto-desc">// 判断队列是否为空</span></li>
+            <li><code>size();</code><span class="proto-desc">// 返回队列的大小</span></li>
+        </ul>
+
+        <!-- 3.7 list -->
+        <h3 id="sec-3-7">3.7 list 容器</h3>
+        <img class="asset-img" src="data:image/jpeg;base64,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" alt="list 双向链表结构">
+
+        <h4 id="sec-3-7-2">3.7.2 list构造函数</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>list&lt;T&gt; lst;</code><span class="proto-desc">// list 默认构造形式</span></li>
+            <li><code>list(beg, end);</code><span class="proto-desc">// 构造函数将 [beg, end) 区间中的元素拷贝给本身</span></li>
+            <li><code>list(n, elem);</code><span class="proto-desc">// 构造函数将 n 个 elem 拷贝给本身</span></li>
+            <li><code>list(const list&amp; lst);</code><span class="proto-desc">// 拷贝构造函数</span></li>
+        </ul>
+
+        <h4 id="sec-3-7-3">3.7.3 list赋值和交换</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>assign(beg, end);</code><span class="proto-desc">// 将 [beg, end) 区间中的数据拷贝赋值给本身</span></li>
+            <li><code>assign(n, elem);</code><span class="proto-desc">// 将 n 个 elem 拷贝赋值给本身</span></li>
+            <li><code>list&amp; operator=(const list&amp; lst);</code><span class="proto-desc">// 重载等号操作符</span></li>
+            <li><code>swap(lst);</code><span class="proto-desc">// 将 lst 与本身的元素互换</span></li>
+        </ul>
+
+        <h4 id="sec-3-7-4">3.7.4 list大小操作</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>size();</code><span class="proto-desc">// 返回容器中元素的个数</span></li>
+            <li><code>empty();</code><span class="proto-desc">// 判断容器是否为空</span></li>
+            <li><code>resize(num);</code><span class="proto-desc">// 重新指定容器的长度为 num，若变长以默认值填充，变短超出的被删除</span></li>
+            <li><code>resize(num, elem);</code><span class="proto-desc">// 重新指定容器长度为 num，若变长以 elem 值填充，变短超出的被删除</span></li>
+        </ul>
+
+        <h4 id="sec-3-7-5">3.7.5 list插入和删除</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>push_back(elem);</code><span class="proto-desc">// 在容器尾部加入一个元素</span></li>
+            <li><code>pop_back();</code><span class="proto-desc">// 删除容器中最后一个元素</span></li>
+            <li><code>push_front(elem);</code><span class="proto-desc">// 在容器头部插入一个元素</span></li>
+            <li><code>pop_front();</code><span class="proto-desc">// 删除容器中第一个元素</span></li>
+            <li><code>insert(pos, elem);</code><span class="proto-desc">// 在 pos 位置插入 elem 元素的拷贝，返回新数据位置</span></li>
+            <li><code>insert(pos, n, elem);</code><span class="proto-desc">// 在 pos 位置插入 n 个 elem 数据，无返回值</span></li>
+            <li><code>insert(pos, beg, end);</code><span class="proto-desc">// 在 pos 位置插入 [beg, end) 区间的数据，无返回值</span></li>
+            <li><code>clear();</code><span class="proto-desc">// 清除容器中所有元素</span></li>
+            <li><code>erase(beg, end);</code><span class="proto-desc">// 删除 [beg, end) 区间的数据，返回下一个数据的位置</span></li>
+            <li><code>erase(pos);</code><span class="proto-desc">// 删除 pos 位置的数据，返回下一个数据的位置</span></li>
+            <li><code>remove(elem);</code><span class="proto-desc">// 移除容器中所有与 elem 值匹配的元素</span></li>
+        </ul>
+
+        <h4 id="sec-3-7-6">3.7.6 list数据存取</h4>
+        <p><strong>函数原型：</strong>（不支持 <code>[]</code> 与 <code>at()</code> 随机访问）</p>
+        <ul class="proto-list">
+            <li><code>front();</code><span class="proto-desc">// 返回第一个元素</span></li>
+            <li><code>back();</code><span class="proto-desc">// 返回最后一个元素</span></li>
+        </ul>
+
+        <h4 id="sec-3-7-7">3.7.7 list反转和排序</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>reverse();</code><span class="proto-desc">// 反转链表</span></li>
+            <li><code>sort();</code><span class="proto-desc">// 链表排序 (成员函数，默认升序)</span></li>
+            <li><code>sort(comp);</code><span class="proto-desc">// 自定义规则排序，传入二元谓词仿函数</span></li>
+        </ul>
+
+        <!-- 3.8 set -->
+        <h3 id="sec-3-8">3.8 set/ multiset 容器</h3>
+
+        <h4 id="sec-3-8-2">3.8.2 set构造和赋值</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>set&lt;T&gt; st;</code><span class="proto-desc">// 默认构造函数</span></li>
+            <li><code>set(const set&amp; st);</code><span class="proto-desc">// 拷贝构造函数</span></li>
+            <li><code>set&amp; operator=(const set&amp; st);</code><span class="proto-desc">// 重载等号操作符</span></li>
+        </ul>
+
+        <h4 id="sec-3-8-3">3.8.3 set大小和交换</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>size();</code><span class="proto-desc">// 返回容器中元素的数目</span></li>
+            <li><code>empty();</code><span class="proto-desc">// 判断容器是否为空</span></li>
+            <li><code>swap(st);</code><span class="proto-desc">// 交换两个集合容器</span></li>
+        </ul>
+
+        <h4 id="sec-3-8-4">3.8.4 set插入和删除</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>insert(elem);</code><span class="proto-desc">// 容器中插入元素 (set 返回 pair&lt;iterator, bool&gt;)</span></li>
+            <li><code>clear();</code><span class="proto-desc">// 清除所有元素</span></li>
+            <li><code>erase(pos);</code><span class="proto-desc">// 删除 pos 迭代器所指的元素，返回下一个元素的迭代器</span></li>
+            <li><code>erase(beg, end);</code><span class="proto-desc">// 删除区间 [beg, end) 的所有元素，返回下一个元素的迭代器</span></li>
+            <li><code>erase(elem);</code><span class="proto-desc">// 删除容器中值为 elem 的元素，返回删除个数</span></li>
+        </ul>
+
+        <h4 id="sec-3-8-5">3.8.5 set查找和统计</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>find(key);</code><span class="proto-desc">// 查找 key 是否存在,若存在返回该元素的迭代器；不存在返回 set.end()</span></li>
+            <li><code>count(key);</code><span class="proto-desc">// 统计 key 的元素个数 (对于 set 结果只有 0 或 1)</span></li>
+        </ul>
+
+        <h4 id="sec-3-8-6">3.8.6 set和multiset区别</h4>
+        <ul class="proto-list">
+            <li><code>set.insert(elem);</code><span class="proto-desc">// 不允许重复元素，返回 pair&lt;iterator, bool&gt; 包含插入成功判定</span></li>
+            <li><code>multiset.insert(elem);</code><span class="proto-desc">// 允许重复元素，返回 iterator，不检测重复</span></li>
+        </ul>
+
+        <h4 id="sec-3-8-7">3.8.7 pair对组创建</h4>
+        <p><strong>原型语法：</strong></p>
+        <ul class="proto-list">
+            <li><code>pair&lt;type, type&gt; p(value1, value2);</code><span class="proto-desc">// 第一种方式：显式类型构造</span></li>
+            <li><code>pair&lt;type, type&gt; p = make_pair(value1, value2);</code><span class="proto-desc">// 第二种方式：利用 make_pair 函数模板自动推导</span></li>
+        </ul>
+
+        <h4 id="sec-3-8-8">3.8.8 set容器排序 (仿函数)</h4>
+        <pre class="code-box"><code><span class="com">// 利用仿函数改变排序规则</span>
+<span class="kw">class</span> <span class="typ">MyCompare</span> {
+<span class="kw">public</span>:
+    <span class="typ">bool</span> <span class="kw">operator</span>()(<span class="kw">int</span> v1, <span class="kw">int</span> v2) <span class="kw">const</span> {
+        <span class="kw">return</span> v1 &gt; v2;
+    }
+};
+
+<span class="typ">std::set</span>&lt;<span class="kw">int</span>, MyCompare&gt; s;</code></pre>
+
+        <!-- 3.9 map -->
+        <h3 id="sec-3-9">3.9 map/ multimap 容器</h3>
+
+        <h4 id="sec-3-9-2">3.9.2 map构造和赋值</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>map&lt;T1, T2&gt; mp;</code><span class="proto-desc">// map 默认构造函数</span></li>
+            <li><code>map(const map&amp; mp);</code><span class="proto-desc">// 拷贝构造函数</span></li>
+            <li><code>map&amp; operator=(const map&amp; mp);</code><span class="proto-desc">// 重载等号操作符</span></li>
+        </ul>
+
+        <h4 id="sec-3-9-3">3.9.3 map大小和交换</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>size();</code><span class="proto-desc">// 返回容器中元素的数目</span></li>
+            <li><code>empty();</code><span class="proto-desc">// 判断容器是否为空</span></li>
+            <li><code>swap(mp);</code><span class="proto-desc">// 交换两个集合容器</span></li>
+        </ul>
+
+        <h4 id="sec-3-9-4">3.9.4 map插入和删除</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>mp.insert(pair&lt;int, int&gt;(key, value));</code><span class="proto-desc">// 第一种插入方式：pair 显式构造</span></li>
+            <li><code>mp.insert(make_pair(key, value));</code><span class="proto-desc">// 第二种插入方式：利用 make_pair 函数模板 (最推荐)</span></li>
+            <li><code>mp.insert(map&lt;int, int&gt;::value_type(key, value));</code><span class="proto-desc">// 第三种插入方式：value_type</span></li>
+            <li><code>mp[key] = value;</code><span class="proto-desc">// 第四种插入方式：[] 下标赋值 (若 key 不存在则自动新建默认节点)</span></li>
+            <li><code>clear();</code><span class="proto-desc">// 清除所有元素</span></li>
+            <li><code>erase(pos);</code><span class="proto-desc">// 删除 pos 迭代器所指的元素，返回下一个元素的迭代器</span></li>
+            <li><code>erase(beg, end);</code><span class="proto-desc">// 删除区间 [beg, end) 的所有元素，返回下一个元素的迭代器</span></li>
+            <li><code>erase(key);</code><span class="proto-desc">// 删除容器中值为 key 的元素，返回删除个数</span></li>
+        </ul>
+
+        <h4 id="sec-3-9-5">3.9.5 map查找和统计</h4>
+        <p><strong>函数原型：</strong></p>
+        <ul class="proto-list">
+            <li><code>find(key);</code><span class="proto-desc">// 查找 key 是否存在,若存在返回该元素的迭代器；不存在返回 map.end()</span></li>
+            <li><code>count(key);</code><span class="proto-desc">// 统计 key 的元素个数 (对于 map 结果只有 0 或 1)</span></li>
+        </ul>
+
+        <h4 id="sec-3-9-6">3.9.6 map容器排序</h4>
+        <pre class="code-box"><code><span class="com">// 自定义根据 key 降序排序的仿函数</span>
+<span class="kw">class</span> <span class="typ">MapCompare</span> {
+<span class="kw">public</span>:
+    <span class="typ">bool</span> <span class="kw">operator</span>()(<span class="kw">int</span> v1, <span class="kw">int</span> v2) <span class="kw">const</span> {
+        <span class="kw">return</span> v1 &gt; v2;
+    }
+};
+
+<span class="typ">std::map</span>&lt;<span class="kw">int</span>, <span class="typ">std::string</span>, MapCompare&gt; m;</code></pre>
+
+        <!-- 4 常用容器特性对比表 -->
+        <h2 id="sec-4-overview">4 常用容器特性全景对比表</h2>
+        <table>
+            <thead>
+                <tr><th>容器类型</th><th>底层实现结构</th><th>随机索引 []</th><th>插入 / 删除复杂度</th><th>查找复杂度</th><th>迭代器等级</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>std::vector&lt;T&gt;</code></td><td>单向连续动态数组</td><td>支持 ($O(1)$)</td><td>尾部平摊 $O(1)$，中间 $O(n)$</td><td>未排序 $O(n)$</td><td>随机访问迭代器</td></tr>
+                <tr><td><code>std::deque&lt;T&gt;</code></td><td>分段连续缓冲区 + 中控表</td><td>支持 ($O(1)$)</td><td>头尾均为 $O(1)$，中间 $O(n)$</td><td>未排序 $O(n)$</td><td>随机访问迭代器</td></tr>
+                <tr><td><code>std::list&lt;T&gt;</code></td><td>双向带头循环链表</td><td>不支持</td><td>任意已知节点 $O(1)$</td><td>线性遍历 $O(n)$</td><td>双向迭代器</td></tr>
+                <tr><td><code>std::stack&lt;T&gt;</code></td><td>底层默认 deque 适配</td><td>不支持</td><td>栈顶推入 / 弹出 $O(1)$</td><td>不支持查找</td><td>无迭代器 (LIFO)</td></tr>
+                <tr><td><code>std::queue&lt;T&gt;</code></td><td>底层默认 deque 适配</td><td>不支持</td><td>队尾入队 / 队头出队 $O(1)$</td><td>不支持查找</td><td>无迭代器 (FIFO)</td></tr>
+                <tr><td><code>std::set&lt;T&gt;</code></td><td>红黑树（自平衡二叉搜索树）</td><td>不支持</td><td>对数时间 $O(\log n)$</td><td>对数查找 $O(\log n)$</td><td>双向迭代器</td></tr>
+                <tr><td><code>std::map&lt;K, V&gt;</code></td><td>红黑树（键值对映射）</td><td>支持按 key 索引</td><td>对数时间 $O(\log n)$</td><td>对数查找 $O(\log n)$</td><td>双向迭代器</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function filterToc() {
+            var input = document.getElementById('toc-search');
+            var filter = input.value.toLowerCase();
+            var nav = document.getElementById('toc-nav');
+            var links = nav.getElementsByTagName('a');
+            for (var i = 0; i < links.length; i++) {
+                var txt = links[i].textContent || links[i].innerText;
+                var li = links[i].parentElement;
+                if (txt.toLowerCase().indexOf(filter) > -1) {
+                    li.style.display = "";
+                } else {
+                    li.style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
